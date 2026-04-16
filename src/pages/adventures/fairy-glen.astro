@@ -76,7 +76,7 @@ const mediaItems: MediaItem[] = [
 <BaseLayout title="Fairy Glen — Skye House">
   <section class="garden-page">
     <section class="room-hero">
-      <img src="/images/adventures/fairy-glen/fg1.jpg" alt="" class="room-hero-image" />
+      <img src="/images/adventures/fairy-glen/fg1.jpg" alt="" class="room-hero-image" fetchpriority="high" decoding="async" />
       <div class="room-hero-overlay">
         <p class="eyebrow">Adventures</p>
         <h1>Fairy Glen</h1>
@@ -100,7 +100,7 @@ const mediaItems: MediaItem[] = [
             <img
               src={item.src}
               alt={item.alt}
-              class="thumb"
+              class="thumb" loading="lazy" decoding="async"
             />
           </button>
         ))}

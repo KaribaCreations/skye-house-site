@@ -26,6 +26,12 @@ const {
         data-gallery-section={gallery.name}
         data-current-index="0"
         data-images={JSON.stringify(gallery.images)}
+        data-lightbox-items={JSON.stringify(
+          gallery.images.map((image: string, index: number) => ({
+            src: image,
+            alt: `${gallery.title} image ${index + 1}`,
+          })),
+        )}
       >
         <div class="gallery-header">
           <h2>{gallery.title}</h2>
@@ -41,22 +47,18 @@ const {
             data-open-gallery={gallery.name}
             data-index="0"
             data-lightbox-open={`${galleryId}-viewer`}
-            data-lightbox-items={JSON.stringify(
-              gallery.images.map((image: string, index: number) => ({
-                src: image,
-                alt: `${gallery.title} image ${index + 1}`,
-              })),
-            )}
             data-lightbox-start-index="0"
             aria-label={`Open ${gallery.title} gallery`}
           >
             <img
               src={gallery.images[0]}
               alt={`${gallery.title} image 1`}
-              class="gallery-main-image"
+              class="gallery-main-image" loading="lazy" decoding="async"
               data-featured-image={gallery.name}
               data-group={gallery.name}
               data-index="0"
+              loading="lazy"
+              decoding="async"
             />
           </button>
 
@@ -91,7 +93,13 @@ const {
               data-index={index}
               aria-label={`Show ${gallery.title} image ${index + 1}`}
             >
-              <img src={image} alt="" class="gallery-hint-image" />
+              <img
+                src={image}
+                alt=""
+                class="gallery-hint-image" loading="lazy" decoding="async"
+                loading="lazy"
+                decoding="async"
+              />
             </button>
           ))}
 
@@ -102,12 +110,6 @@ const {
               data-open-gallery={gallery.name}
               data-index="0"
               data-lightbox-open={`${galleryId}-viewer`}
-              data-lightbox-items={JSON.stringify(
-                gallery.images.map((image: string, index: number) => ({
-                  src: image,
-                  alt: `${gallery.title} image ${index + 1}`,
-                })),
-              )}
               data-lightbox-start-index="0"
               aria-label={`Open ${gallery.title} gallery`}
             >
@@ -130,6 +132,7 @@ const {
     const galleryArrowButtons = root.querySelectorAll("[data-gallery-arrow]");
 
     const groups = new Map();
+    const groupItems = new Map();
 
     root.querySelectorAll(".gallery-section").forEach((section) => {
       if (!(section instanceof HTMLElement)) return;
@@ -143,6 +146,20 @@ const {
         const parsed = JSON.parse(rawImages);
         if (Array.isArray(parsed)) {
           groups.set(groupName, parsed);
+
+          const heading = section.querySelector(".gallery-header h2");
+          const headingText =
+            heading instanceof HTMLHeadingElement && heading.textContent
+              ? heading.textContent
+              : groupName;
+
+          groupItems.set(
+            groupName,
+            parsed.map((image, index) => ({
+              src: image,
+              alt: `${headingText} image ${index + 1}`,
+            })),
+          );
         }
       } catch {}
     });
@@ -174,54 +191,29 @@ const {
       });
     }
 
-    function buildItems(groupName) {
-      const section = root.querySelector(`[data-gallery-section="${groupName}"]`);
-      const images = groups.get(groupName);
-
-      if (!(section instanceof HTMLElement)) return [];
-      if (!Array.isArray(images)) return [];
-
-      const heading = section.querySelector(".gallery-header h2");
-      const headingText =
-        heading instanceof HTMLHeadingElement && heading.textContent
-          ? heading.textContent
-          : groupName;
-
-      return images.map((image, index) => ({
-        src: image,
-        alt: `${headingText} image ${index + 1}`,
-      }));
-    }
-
     function updateFeaturedImage(groupName, index) {
       const images = groups.get(groupName);
+      const items = groupItems.get(groupName);
       const featured = root.querySelector(`[data-featured-image="${groupName}"]`);
       const openButton = root.querySelector(`.gallery-main-button[data-open-gallery="${groupName}"]`);
-      const moreButton = root.querySelector(`.gallery-more[data-open-gallery="${groupName}"]`);
 
       if (!Array.isArray(images)) return;
+      if (!Array.isArray(items)) return;
       if (!(featured instanceof HTMLImageElement)) return;
 
       const safeIndex = normaliseIndex(groupName, index);
       const nextImage = images[safeIndex];
+      const nextItem = items[safeIndex];
 
-      if (!nextImage) return;
-
-      const itemsJson = JSON.stringify(buildItems(groupName));
+      if (!nextImage || !nextItem) return;
 
       featured.src = nextImage;
-      featured.alt = buildItems(groupName)[safeIndex]?.alt ?? "";
+      featured.alt = nextItem.alt ?? "";
       featured.dataset.index = String(safeIndex);
 
       if (openButton instanceof HTMLElement) {
         openButton.dataset.index = String(safeIndex);
-        openButton.dataset.lightboxItems = itemsJson;
         openButton.dataset.lightboxStartIndex = String(safeIndex);
-      }
-
-      if (moreButton instanceof HTMLElement) {
-        moreButton.dataset.lightboxItems = itemsJson;
-        moreButton.dataset.lightboxStartIndex = "0";
       }
 
       setActiveHint(groupName, safeIndex);

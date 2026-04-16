@@ -40,7 +40,7 @@ const mediaItems: MediaItem[] = [
 <BaseLayout title="Storm Amy — Skye House">
   <section class="garden-page">
     <section class="room-hero">
-      <img src="/images/adventures/Storm-Amy/sa1.png" alt="" class="room-hero-image" />
+      <img src="/images/adventures/Storm-Amy/sa1.png" alt="" class="room-hero-image" fetchpriority="high" decoding="async" />
       <div class="room-hero-overlay">
         <p class="eyebrow">Adventures</p>
         <h1>Storm Amy</h1>
@@ -64,7 +64,7 @@ const mediaItems: MediaItem[] = [
             <img
               src={item.poster}
               alt={item.alt}
-              class="thumb"
+              class="thumb" loading="lazy" decoding="async"
             />
 
             <span class="video-badge" aria-hidden="true">

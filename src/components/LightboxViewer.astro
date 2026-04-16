@@ -239,8 +239,13 @@ const {
 
         let requestedItems = fallbackItems;
 
+        const itemsSource =
+          trigger.closest("[data-lightbox-items]") instanceof HTMLElement
+            ? trigger.closest("[data-lightbox-items]")
+            : trigger;
+
         try {
-          const rawItems = trigger.dataset.lightboxItems;
+          const rawItems = itemsSource.dataset.lightboxItems;
           if (rawItems) {
             const parsed = JSON.parse(rawItems);
             if (Array.isArray(parsed)) {

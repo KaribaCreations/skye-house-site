@@ -87,7 +87,7 @@ const mediaItems: MediaItem[] = [
 <BaseLayout title="Mound + Path — Skye House">
   <section class="garden-page">
     <section class="room-hero">
-      <img src="/images/garden/mound+path/construction/construction1.jpg" alt="" class="room-hero-image" />
+      <img src="/images/garden/mound+path/construction/construction1.jpg" alt="" class="room-hero-image" fetchpriority="high" decoding="async" />
       <div class="room-hero-overlay">
         <p class="eyebrow">Garden</p>
         <h1>Mound + Path</h1>
@@ -111,7 +111,7 @@ const mediaItems: MediaItem[] = [
             <img
               src={item.type === "video" ? item.poster : item.src}
               alt={item.alt}
-              class="thumb"
+              class="thumb" loading="lazy" decoding="async"
             />
 
             {item.type === "video" && (

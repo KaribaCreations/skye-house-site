@@ -5,7 +5,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <BaseLayout title="Skye House">
   <section class="home-page">
     <section class="hero-banner">
-      <img src="/images/homepage/hero.jpg" alt="" class="hero-image" />
+      <img
+        src="/images/homepage/hero.jpg"
+        alt=""
+        class="hero-image" fetchpriority="high" decoding="async"
+        fetchpriority="high"
+        decoding="async"
+      />
       <div class="hero-overlay">
         <p class="eyebrow">Skye House</p>
         <h1>House renovation and life on Skye.</h1>
@@ -15,7 +21,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <section class="section-list">
       <a href="/house" class="section-card">
         <div class="section-image">
-          <img src="/images/homepage/house.jpg" alt="" />
+          <img
+            src="/images/homepage/house.jpg"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div class="section-copy">
           <h2>House</h2>
@@ -25,7 +36,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       <a href="/garden" class="section-card">
         <div class="section-image">
-          <img src="/images/homepage/garden.jpg" alt="" />
+          <img
+            src="/images/homepage/garden.jpg"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div class="section-copy">
           <h2>Garden</h2>
@@ -35,7 +51,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       <a href="/adventures" class="section-card">
         <div class="section-image">
-          <img src="/images/homepage/adventures.jpg" alt="" />
+          <img
+            src="/images/homepage/adventures.jpg"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div class="section-copy">
           <h2>Adventures</h2>
