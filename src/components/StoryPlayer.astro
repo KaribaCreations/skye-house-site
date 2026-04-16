@@ -1,0 +1,453 @@
+---
+interface MediaItem {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+}
+
+interface Props {
+  storyId: string;
+  items?: MediaItem[];
+  audioSrc?: string;
+}
+
+const {
+  storyId,
+  items = [],
+  audioSrc = "",
+} = Astro.props as Props;
+---
+
+<div
+  class="story-player"
+  data-story-viewer={storyId}
+  data-default-items={JSON.stringify(items)}
+  data-audio-src={audioSrc}
+>
+  <button class="story-close" data-story-close aria-label="Close story">×</button>
+  <button class="story-nav story-prev" data-story-prev aria-label="Previous media">‹</button>
+
+  <div class="story-media-frame">
+    <img class="story-img" data-story-img alt="" />
+    <video
+      class="story-video"
+      data-story-video
+      playsinline
+      preload="metadata"
+    ></video>
+  </div>
+
+  <button class="story-nav story-next" data-story-next aria-label="Next media">›</button>
+
+  <audio data-story-audio preload="auto"></audio>
+</div>
+
+<script define:vars={{ storyId }}>
+  const viewerRoot = document.querySelector(`[data-story-viewer="${storyId}"]`);
+
+  if (viewerRoot instanceof HTMLDivElement) {
+    const rawDefaultItems = viewerRoot.dataset.defaultItems;
+    const audioSrc = viewerRoot.dataset.audioSrc || "";
+    const storyImgEl = viewerRoot.querySelector("[data-story-img]");
+    const storyVideoEl = viewerRoot.querySelector("[data-story-video]");
+    const storyAudioEl = viewerRoot.querySelector("[data-story-audio]");
+    const storyCloseEl = viewerRoot.querySelector("[data-story-close]");
+    const storyPrevEl = viewerRoot.querySelector("[data-story-prev]");
+    const storyNextEl = viewerRoot.querySelector("[data-story-next]");
+
+    if (
+      storyImgEl instanceof HTMLImageElement &&
+      storyVideoEl instanceof HTMLVideoElement &&
+      storyAudioEl instanceof HTMLAudioElement &&
+      storyCloseEl instanceof HTMLButtonElement &&
+      storyPrevEl instanceof HTMLButtonElement &&
+      storyNextEl instanceof HTMLButtonElement
+    ) {
+      let fallbackItems = [];
+
+      try {
+        const parsed = JSON.parse(rawDefaultItems || "[]");
+        if (Array.isArray(parsed)) {
+          fallbackItems = parsed;
+        }
+      } catch {}
+
+      let currentItems = fallbackItems;
+      let currentIndex = 0;
+      let isStoryActive = false;
+      let imageTimer;
+      let mediaFadeTimer;
+
+      const storyImg = storyImgEl;
+      const storyVideo = storyVideoEl;
+      const storyAudio = storyAudioEl;
+      const storyClose = storyCloseEl;
+      const storyPrev = storyPrevEl;
+      const storyNext = storyNextEl;
+
+      const IMAGE_DURATION = 4200;
+      const AUDIO_NORMAL_VOLUME = 0.7;
+      const AUDIO_DUCKED_VOLUME = 0.16;
+
+      function normaliseIndex(index, items) {
+        if (!Array.isArray(items) || items.length === 0) return 0;
+        if (index < 0) return items.length - 1;
+        if (index >= items.length) return 0;
+        return index;
+      }
+
+      function inferType(src) {
+        if (typeof src !== "string") return "image";
+
+        const cleanSrc = src.split("?")[0].toLowerCase();
+
+        if (cleanSrc.endsWith(".mp4") || cleanSrc.endsWith(".webm") || cleanSrc.endsWith(".ogg")) {
+          return "video";
+        }
+
+        return "image";
+      }
+
+      function getItemType(item) {
+        if (item && (item.type === "image" || item.type === "video")) {
+          return item.type;
+        }
+
+        return inferType(item?.src);
+      }
+
+      function clearImageTimer() {
+        if (imageTimer) {
+          window.clearTimeout(imageTimer);
+          imageTimer = undefined;
+        }
+      }
+
+      function clearMediaFadeTimer() {
+        if (mediaFadeTimer) {
+          window.clearTimeout(mediaFadeTimer);
+          mediaFadeTimer = undefined;
+        }
+      }
+
+      function stopVideo() {
+        storyVideo.pause();
+        storyVideo.currentTime = 0;
+      }
+
+      function setAudioVolume(targetVolume) {
+        storyAudio.volume = Math.max(0, Math.min(1, targetVolume));
+      }
+
+      function fadeInMedia() {
+        viewerRoot.classList.remove("media-visible");
+        clearMediaFadeTimer();
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewerRoot.classList.add("media-visible");
+          });
+        });
+      }
+
+      function tryPlayAudio() {
+        if (!audioSrc) return;
+
+        if (storyAudio.src !== new URL(audioSrc, window.location.origin).href) {
+          storyAudio.src = audioSrc;
+        }
+
+        storyAudio.loop = true;
+        const audioPromise = storyAudio.play();
+
+        if (audioPromise && typeof audioPromise.catch === "function") {
+          audioPromise.catch(() => {});
+        }
+      }
+
+      function tryPlayVideo() {
+        const playPromise = storyVideo.play();
+
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      }
+
+      function scheduleNextImage() {
+        clearImageTimer();
+
+        if (!isStoryActive) return;
+
+        imageTimer = window.setTimeout(() => {
+          showNext();
+        }, IMAGE_DURATION);
+      }
+
+      function showImage(item) {
+        viewerRoot.classList.remove("is-video");
+        viewerRoot.classList.add("is-image");
+
+        stopVideo();
+        storyVideo.removeAttribute("src");
+        storyVideo.removeAttribute("poster");
+        storyVideo.load();
+
+        storyImg.src = item.src;
+        storyImg.alt = typeof item.alt === "string" ? item.alt : "";
+
+        setAudioVolume(AUDIO_NORMAL_VOLUME);
+        fadeInMedia();
+        scheduleNextImage();
+      }
+
+      function showVideo(item) {
+        viewerRoot.classList.remove("is-image");
+        viewerRoot.classList.add("is-video");
+
+        clearImageTimer();
+
+        storyImg.removeAttribute("src");
+        storyImg.alt = "";
+
+        storyVideo.src = item.src;
+        storyVideo.autoplay = true;
+        storyVideo.muted = false;
+        storyVideo.controls = false;
+
+        if (typeof item.poster === "string" && item.poster.length > 0) {
+          storyVideo.poster = item.poster;
+        } else {
+          storyVideo.removeAttribute("poster");
+        }
+
+        setAudioVolume(AUDIO_DUCKED_VOLUME);
+        storyVideo.load();
+        fadeInMedia();
+
+        const onCanPlay = () => {
+          tryPlayVideo();
+          storyVideo.removeEventListener("canplay", onCanPlay);
+        };
+
+        storyVideo.addEventListener("canplay", onCanPlay);
+      }
+
+      function show(items, index) {
+        if (!Array.isArray(items) || items.length === 0) return;
+
+        const safeIndex = normaliseIndex(index, items);
+        const item = items[safeIndex];
+
+        if (!item || typeof item.src !== "string" || item.src.length === 0) return;
+
+        currentItems = items;
+        currentIndex = safeIndex;
+
+        clearImageTimer();
+        stopVideo();
+
+        const itemType = getItemType(item);
+
+        if (itemType === "video") {
+          showVideo(item);
+        } else {
+          showImage(item);
+        }
+
+        viewerRoot.classList.add("open");
+      }
+
+      function openStory(items, index) {
+        isStoryActive = true;
+        setAudioVolume(AUDIO_NORMAL_VOLUME);
+        tryPlayAudio();
+        show(items, index);
+      }
+
+      function close() {
+        isStoryActive = false;
+        clearImageTimer();
+        clearMediaFadeTimer();
+        viewerRoot.classList.remove("open");
+        viewerRoot.classList.remove("is-image");
+        viewerRoot.classList.remove("is-video");
+        viewerRoot.classList.remove("media-visible");
+        stopVideo();
+        storyAudio.pause();
+        storyAudio.currentTime = 0;
+      }
+
+      function showPrev() {
+        show(currentItems, currentIndex - 1);
+      }
+
+      function showNext() {
+        show(currentItems, currentIndex + 1);
+      }
+
+      storyVideo.addEventListener("ended", () => {
+        if (!isStoryActive) return;
+        setAudioVolume(AUDIO_NORMAL_VOLUME);
+        showNext();
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+
+        const trigger = target.closest("[data-story-open]");
+        if (!(trigger instanceof HTMLElement)) return;
+
+        const requestedStoryId = trigger.dataset.storyOpen;
+        if (requestedStoryId !== storyId) return;
+
+        let requestedItems = fallbackItems;
+
+        try {
+          const rawItems = trigger.dataset.storyItems;
+          if (rawItems) {
+            const parsed = JSON.parse(rawItems);
+            if (Array.isArray(parsed)) {
+              requestedItems = parsed;
+            }
+          }
+        } catch {}
+
+        const requestedIndex = Number(trigger.dataset.storyStartIndex ?? "0");
+        if (Number.isNaN(requestedIndex)) return;
+
+        event.preventDefault();
+        openStory(requestedItems, requestedIndex);
+      });
+
+      viewerRoot.addEventListener("click", (event) => {
+        if (event.target === viewerRoot) {
+          close();
+        }
+      });
+
+      storyClose.addEventListener("click", close);
+      storyPrev.addEventListener("click", showPrev);
+      storyNext.addEventListener("click", showNext);
+
+      document.addEventListener("keydown", (event) => {
+        if (!viewerRoot.classList.contains("open")) return;
+
+        if (event.key === "Escape") close();
+        if (event.key === "ArrowLeft") showPrev();
+        if (event.key === "ArrowRight") showNext();
+      });
+    }
+  }
+</script>
+
+<style>
+  .story-player {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1100;
+  }
+
+  .story-player.open {
+    display: flex;
+  }
+
+  .story-media-frame {
+    width: min(92vw, 1600px);
+    height: min(90vh, 980px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .story-img,
+  .story-video {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: none;
+    opacity: 0;
+    border-radius: 10px;
+    transition: opacity 0.45s ease;
+  }
+
+  .story-player.media-visible .story-img,
+  .story-player.media-visible .story-video {
+    opacity: 1;
+  }
+
+  .story-player.is-image .story-img {
+    display: block;
+    animation: story-ken-burns 4.6s ease-out both;
+  }
+
+  .story-player.is-video .story-video {
+    display: block;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .story-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .story-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .story-prev {
+    left: 20px;
+  }
+
+  .story-next {
+    right: 20px;
+  }
+
+  @keyframes story-ken-burns {
+    0% {
+      transform: scale(1.01);
+    }
+    100% {
+      transform: scale(1.08);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .story-player {
+      padding: 16px;
+    }
+
+    .story-nav {
+      width: 40px;
+      height: 40px;
+      font-size: 1.6rem;
+    }
+  }
+</style>

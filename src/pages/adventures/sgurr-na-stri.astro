@@ -1,0 +1,484 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LightboxViewer from "../../components/LightboxViewer.astro";
+import StoryPlayer from "../../components/StoryPlayer.astro";
+
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+const mediaItems: MediaItem[] = [
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s0.jpg",
+    alt: "Sgùrr na Strì image 1",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s1.jpg",
+    alt: "Sgùrr na Strì image 2",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s3.jpg",
+    alt: "Sgùrr na Strì image 3",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s4.jpg",
+    alt: "Sgùrr na Strì image 4",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s5.jpg",
+    alt: "Sgùrr na Strì image 5",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s6.jpg",
+    alt: "Sgùrr na Strì image 6",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s7.jpg",
+    alt: "Sgùrr na Strì image 7",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s8.jpg",
+    alt: "Sgùrr na Strì image 8",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/vid1.mp4",
+    alt: "Sgùrr na Strì video 1",
+    type: "video",
+    poster: "/images/adventures/Sgùrr-na-Strì/vid1.png",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s9.jpg",
+    alt: "Sgùrr na Strì image 9",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s10.jpg",
+    alt: "Sgùrr na Strì image 10",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s11.jpg",
+    alt: "Sgùrr na Strì image 11",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s12.jpg",
+    alt: "Sgùrr na Strì image 12",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s13.jpg",
+    alt: "Sgùrr na Strì image 13",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s14.jpg",
+    alt: "Sgùrr na Strì image 14",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s15.jpg",
+    alt: "Sgùrr na Strì image 15",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s16.jpg",
+    alt: "Sgùrr na Strì image 16",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s17.jpg",
+    alt: "Sgùrr na Strì image 17",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s18.jpg",
+    alt: "Sgùrr na Strì image 18",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/vid2.mp4",
+    alt: "Sgùrr na Strì video 2",
+    type: "video",
+    poster: "/images/adventures/Sgùrr-na-Strì/vid2.png",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s19.jpg",
+    alt: "Sgùrr na Strì image 19",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s20.jpg",
+    alt: "Sgùrr na Strì image 20",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s21.jpg",
+    alt: "Sgùrr na Strì image 21",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s22.jpg",
+    alt: "Sgùrr na Strì image 22",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s23.jpg",
+    alt: "Sgùrr na Strì image 23",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s24.jpg",
+    alt: "Sgùrr na Strì image 24",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s25.jpg",
+    alt: "Sgùrr na Strì image 25",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/vid3.mp4",
+    alt: "Sgùrr na Strì video 3",
+    type: "video",
+    poster: "/images/adventures/Sgùrr-na-Strì/vid3.png",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/vid4.mp4",
+    alt: "Sgùrr na Strì video 4",
+    type: "video",
+    poster: "/images/adventures/Sgùrr-na-Strì/vid4.png",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s26.jpg",
+    alt: "Sgùrr na Strì image 26",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s27.jpg",
+    alt: "Sgùrr na Strì image 27",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s28.jpg",
+    alt: "Sgùrr na Strì image 28",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s29.jpg",
+    alt: "Sgùrr na Strì image 29",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s30.jpg",
+    alt: "Sgùrr na Strì image 30",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s31.jpg",
+    alt: "Sgùrr na Strì image 31",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s32.jpg",
+    alt: "Sgùrr na Strì image 32",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s33.jpg",
+    alt: "Sgùrr na Strì image 33",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s34.jpg",
+    alt: "Sgùrr na Strì image 34",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/s35.jpg",
+    alt: "Sgùrr na Strì image 35",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Sgùrr-na-Strì/vid5.mp4",
+    alt: "Sgùrr na Strì video 5",
+    type: "video",
+    poster: "/images/adventures/Sgùrr-na-Strì/vid5.png",
+  },
+];
+---
+
+<BaseLayout title="Sgùrr na Strì — Skye House">
+  <section class="garden-page">
+    <section class="room-hero">
+      <img src="/images/adventures/Sgùrr-na-Strì/s0.jpg" alt="" class="room-hero-image" />
+      <div class="room-hero-overlay">
+        <p class="eyebrow">Adventures</p>
+        <h1>Sgùrr na Strì</h1>
+        <p class="room-intro">The longest walk, the hottest day, no water, heat stroke, and still worth every second.</p>
+      </div>
+    </section>
+
+    <section class="garden-gallery">
+      <div class="gallery-header">
+        <h2>Gallery</h2>
+
+        <button
+          type="button"
+          class="story-button"
+          data-story-open="sgurr-na-stri-story-player"
+          data-story-items={JSON.stringify(mediaItems)}
+          data-story-start-index="0"
+          aria-label="Play Sgùrr na Strì story"
+        >
+          Play Story
+        </button>
+      </div>
+
+      <div class="image-grid">
+        {mediaItems.map((item, index) => (
+          <button
+            type="button"
+            class="image-button"
+            data-lightbox-open="sgurr-na-stri-gallery-viewer"
+            data-lightbox-items={JSON.stringify(mediaItems)}
+            data-lightbox-start-index={index}
+            aria-label={`Open Sgùrr na Strì media ${index + 1}`}
+          >
+            <img
+              src={item.type === "video" ? item.poster : item.src}
+              alt={item.alt}
+              class="thumb"
+            />
+
+            {item.type === "video" && (
+              <span class="video-badge" aria-hidden="true">
+                <span class="video-badge-icon"></span>
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <LightboxViewer viewerId="sgurr-na-stri-gallery-viewer" items={mediaItems} />
+    <StoryPlayer
+      storyId="sgurr-na-stri-story-player"
+      items={mediaItems}
+      audioSrc="/images/adventures/Sgùrr-na-Strì/audio1.mp3"
+    />
+  </section>
+
+  <style>
+    .garden-page {
+      width: min(var(--site-width), calc(100% - var(--site-gutter)));
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    .room-hero {
+      position: relative;
+      width: 100%;
+      margin: 0 0 24px;
+      overflow: hidden;
+      border-radius: var(--radius-medium);
+      background: var(--bg-panel);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .room-hero-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .room-hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 22px;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.56) 0%,
+        rgba(0, 0, 0, 0.20) 42%,
+        rgba(0, 0, 0, 0.04) 72%
+      );
+      color: var(--title);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 250, 243, 0.86);
+    }
+
+    .room-hero-overlay h1 {
+      margin: 0 0 8px;
+      max-width: 760px;
+    }
+
+    .room-intro {
+      margin: 0;
+      max-width: 620px;
+      color: rgba(255, 250, 243, 0.9);
+    }
+
+    .gallery-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 14px;
+    }
+
+    .garden-gallery h2 {
+      margin: 0;
+    }
+
+    .story-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font: inherit;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .story-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(176, 138, 99, 0.34);
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .image-button {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .thumb {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+      background: #f2f2f2;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .video-badge {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      pointer-events: none;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .video-badge-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .video-badge-icon::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-35%, -50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #ffffff;
+    }
+
+    @media (max-width: 900px) {
+      .image-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .garden-page {
+        width: min(var(--site-width), calc(100% - var(--site-gutter-mobile)));
+      }
+
+      .room-hero-image {
+        height: 220px;
+      }
+
+      .room-hero-overlay {
+        padding: 18px;
+      }
+
+      .gallery-header {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .story-button {
+        width: 100%;
+      }
+
+      .video-badge {
+        right: 10px;
+        bottom: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .image-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

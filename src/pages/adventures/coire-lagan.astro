@@ -1,0 +1,360 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LightboxViewer from "../../components/LightboxViewer.astro";
+
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+const mediaItems: MediaItem[] = [
+  {
+    src: "/images/adventures/Coire Lagan/cl0.jpg",
+    alt: "Coire Lagan image 1",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl1.jpg",
+    alt: "Coire Lagan image 2",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl2.jpg",
+    alt: "Coire Lagan image 3",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl3.jpg",
+    alt: "Coire Lagan image 4",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl4.jpg",
+    alt: "Coire Lagan image 5",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl5.jpg",
+    alt: "Coire Lagan image 6",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl6.jpg",
+    alt: "Coire Lagan image 7",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl7.jpg",
+    alt: "Coire Lagan image 8",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl8.jpg",
+    alt: "Coire Lagan image 9",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl9.jpg",
+    alt: "Coire Lagan image 10",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl10.jpg",
+    alt: "Coire Lagan image 11",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/vid1.mp4",
+    alt: "Coire Lagan video 1",
+    type: "video",
+    poster: "/images/adventures/Coire Lagan/vid1.jpg",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl11.jpg",
+    alt: "Coire Lagan image 12",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl12.jpg",
+    alt: "Coire Lagan image 13",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl13.jpg",
+    alt: "Coire Lagan image 14",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl14.jpg",
+    alt: "Coire Lagan image 15",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl15.jpg",
+    alt: "Coire Lagan image 16",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl16.jpg",
+    alt: "Coire Lagan image 17",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl17.jpg",
+    alt: "Coire Lagan image 18",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl18.jpg",
+    alt: "Coire Lagan image 19",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl19.jpg",
+    alt: "Coire Lagan image 20",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl20.jpg",
+    alt: "Coire Lagan image 21",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl21.jpg",
+    alt: "Coire Lagan image 22",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl22.jpg",
+    alt: "Coire Lagan image 23",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl23.jpg",
+    alt: "Coire Lagan image 24",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl24.jpg",
+    alt: "Coire Lagan image 25",
+    type: "image",
+  },
+  {
+    src: "/images/adventures/Coire Lagan/cl25.jpg",
+    alt: "Coire Lagan image 26",
+    type: "image",
+  },
+  
+];
+---
+
+<BaseLayout title="Coire Lagan — Skye House">
+  <section class="garden-page">
+    <section class="room-hero">
+      <img src="/images/adventures/Coire Lagan/cl0.jpg" alt="" class="room-hero-image" />
+      <div class="room-hero-overlay">
+        <p class="eyebrow">Adventures</p>
+        <h1>Coire Lagan</h1>
+        <p class="room-intro">Chilly &amp; windy mountain hike.</p>
+      </div>
+    </section>
+
+    <section class="garden-gallery">
+      <h2>Gallery</h2>
+
+      <div class="image-grid">
+        {mediaItems.map((item, index) => (
+          <button
+            type="button"
+            class="image-button"
+            data-lightbox-open="coire-lagan-gallery-viewer"
+            data-lightbox-items={JSON.stringify(mediaItems)}
+            data-lightbox-start-index={index}
+            aria-label={`Open Coire Lagan media ${index + 1}`}
+          >
+            <img
+              src={item.type === "video" ? item.poster : item.src}
+              alt={item.alt}
+              class="thumb"
+            />
+
+            {item.type === "video" && (
+              <span class="video-badge" aria-hidden="true">
+                <span class="video-badge-icon"></span>
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <LightboxViewer viewerId="coire-lagan-gallery-viewer" items={mediaItems} />
+  </section>
+
+  <style>
+    .garden-page {
+      width: min(var(--site-width), calc(100% - var(--site-gutter)));
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    .room-hero {
+      position: relative;
+      width: 100%;
+      margin: 0 0 24px;
+      overflow: hidden;
+      border-radius: var(--radius-medium);
+      background: var(--bg-panel);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .room-hero-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .room-hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 22px;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.56) 0%,
+        rgba(0, 0, 0, 0.20) 42%,
+        rgba(0, 0, 0, 0.04) 72%
+      );
+      color: var(--title);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 250, 243, 0.86);
+    }
+
+    .room-hero-overlay h1 {
+      margin: 0 0 8px;
+      max-width: 760px;
+    }
+
+    .room-intro {
+      margin: 0;
+      max-width: 620px;
+      color: rgba(255, 250, 243, 0.9);
+    }
+
+    .garden-gallery h2 {
+      margin: 0 0 14px;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .image-button {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .thumb {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+      background: #f2f2f2;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .video-badge {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      pointer-events: none;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .video-badge-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .video-badge-icon::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-35%, -50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #ffffff;
+    }
+
+    @media (max-width: 900px) {
+      .image-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .garden-page {
+        width: min(var(--site-width), calc(100% - var(--site-gutter-mobile)));
+      }
+
+      .room-hero-image {
+        height: 220px;
+      }
+
+      .room-hero-overlay {
+        padding: 18px;
+      }
+
+      .video-badge {
+        right: 10px;
+        bottom: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .image-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

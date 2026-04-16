@@ -3,12 +3,15 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+  "sync:images": "node scripts/sync-month-images.mjs",
+  "dev": "npm run sync:images && astro dev",
+  "build": "npm run sync:images && astro build",
+  "preview": "astro preview",
+  "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.16.6"
+    "astro": "^5.16.6",
+    "gray-matter": "^4.0.3",
+    "marked": "^17.0.1"
   }
 }

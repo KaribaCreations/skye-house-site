@@ -1,0 +1,478 @@
+---
+import LightboxViewer from "./LightboxViewer.astro";
+
+interface GalleryItem {
+  name: string;
+  title: string;
+  images: string[];
+}
+
+interface Props {
+  galleryId: string;
+  galleries: GalleryItem[];
+}
+
+const {
+  galleryId,
+  galleries = [],
+} = Astro.props as Props;
+---
+
+<section class="gallery-overview" data-room-gallery-root={galleryId}>
+  {
+    galleries.map((gallery: GalleryItem) => (
+      <section
+        class="gallery-section"
+        data-gallery-section={gallery.name}
+        data-current-index="0"
+        data-images={JSON.stringify(gallery.images)}
+      >
+        <div class="gallery-header">
+          <h2>{gallery.title}</h2>
+          <p class="gallery-count">
+            {gallery.images.length} image{gallery.images.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        <div class="gallery-main-wrap">
+          <button
+            type="button"
+            class="gallery-main-button"
+            data-open-gallery={gallery.name}
+            data-index="0"
+            data-lightbox-open={`${galleryId}-viewer`}
+            data-lightbox-items={JSON.stringify(
+              gallery.images.map((image: string, index: number) => ({
+                src: image,
+                alt: `${gallery.title} image ${index + 1}`,
+              })),
+            )}
+            data-lightbox-start-index="0"
+            aria-label={`Open ${gallery.title} gallery`}
+          >
+            <img
+              src={gallery.images[0]}
+              alt={`${gallery.title} image 1`}
+              class="gallery-main-image"
+              data-featured-image={gallery.name}
+              data-group={gallery.name}
+              data-index="0"
+            />
+          </button>
+
+          <button
+            type="button"
+            class="gallery-arrow gallery-arrow-left"
+            data-gallery-arrow={gallery.name}
+            data-direction="prev"
+            aria-label={`Previous ${gallery.title} image`}
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            class="gallery-arrow gallery-arrow-right"
+            data-gallery-arrow={gallery.name}
+            data-direction="next"
+            aria-label={`Next ${gallery.title} image`}
+          >
+            ›
+          </button>
+        </div>
+
+        <div class="gallery-hints">
+          {gallery.images.slice(0, 3).map((image: string, index: number) => (
+            <button
+              type="button"
+              class={`gallery-hint ${index === 0 ? "active" : ""}`}
+              data-hint-button={gallery.name}
+              data-group={gallery.name}
+              data-index={index}
+              aria-label={`Show ${gallery.title} image ${index + 1}`}
+            >
+              <img src={image} alt="" class="gallery-hint-image" />
+            </button>
+          ))}
+
+          {gallery.images.length > 3 && (
+            <button
+              type="button"
+              class="gallery-more"
+              data-open-gallery={gallery.name}
+              data-index="0"
+              data-lightbox-open={`${galleryId}-viewer`}
+              data-lightbox-items={JSON.stringify(
+                gallery.images.map((image: string, index: number) => ({
+                  src: image,
+                  alt: `${gallery.title} image ${index + 1}`,
+                })),
+              )}
+              data-lightbox-start-index="0"
+              aria-label={`Open ${gallery.title} gallery`}
+            >
+              +{gallery.images.length - 3}
+            </button>
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <LightboxViewer viewerId={`${galleryId}-viewer`} items={[]} />
+</section>
+
+<script define:vars={{ galleryId }}>
+  const root = document.querySelector(`[data-room-gallery-root="${galleryId}"]`);
+
+  if (root instanceof HTMLElement) {
+    const hintButtons = root.querySelectorAll("[data-hint-button]");
+    const galleryArrowButtons = root.querySelectorAll("[data-gallery-arrow]");
+
+    const groups = new Map();
+
+    root.querySelectorAll(".gallery-section").forEach((section) => {
+      if (!(section instanceof HTMLElement)) return;
+
+      const groupName = section.dataset.gallerySection;
+      const rawImages = section.dataset.images;
+
+      if (!groupName || !rawImages) return;
+
+      try {
+        const parsed = JSON.parse(rawImages);
+        if (Array.isArray(parsed)) {
+          groups.set(groupName, parsed);
+        }
+      } catch {}
+    });
+
+    function normaliseIndex(groupName, index) {
+      const images = groups.get(groupName);
+
+      if (!Array.isArray(images) || images.length === 0) {
+        return 0;
+      }
+
+      if (index < 0) return images.length - 1;
+      if (index >= images.length) return 0;
+
+      return index;
+    }
+
+    function setActiveHint(groupName, index) {
+      const section = root.querySelector(`[data-gallery-section="${groupName}"]`);
+
+      if (!(section instanceof HTMLElement)) return;
+
+      section.dataset.currentIndex = String(index);
+
+      const sectionHints = section.querySelectorAll(".gallery-hint");
+      sectionHints.forEach((hint) => {
+        if (!(hint instanceof HTMLButtonElement)) return;
+        hint.classList.toggle("active", Number(hint.dataset.index) === index);
+      });
+    }
+
+    function buildItems(groupName) {
+      const section = root.querySelector(`[data-gallery-section="${groupName}"]`);
+      const images = groups.get(groupName);
+
+      if (!(section instanceof HTMLElement)) return [];
+      if (!Array.isArray(images)) return [];
+
+      const heading = section.querySelector(".gallery-header h2");
+      const headingText =
+        heading instanceof HTMLHeadingElement && heading.textContent
+          ? heading.textContent
+          : groupName;
+
+      return images.map((image, index) => ({
+        src: image,
+        alt: `${headingText} image ${index + 1}`,
+      }));
+    }
+
+    function updateFeaturedImage(groupName, index) {
+      const images = groups.get(groupName);
+      const featured = root.querySelector(`[data-featured-image="${groupName}"]`);
+      const openButton = root.querySelector(`.gallery-main-button[data-open-gallery="${groupName}"]`);
+      const moreButton = root.querySelector(`.gallery-more[data-open-gallery="${groupName}"]`);
+
+      if (!Array.isArray(images)) return;
+      if (!(featured instanceof HTMLImageElement)) return;
+
+      const safeIndex = normaliseIndex(groupName, index);
+      const nextImage = images[safeIndex];
+
+      if (!nextImage) return;
+
+      const itemsJson = JSON.stringify(buildItems(groupName));
+
+      featured.src = nextImage;
+      featured.alt = buildItems(groupName)[safeIndex]?.alt ?? "";
+      featured.dataset.index = String(safeIndex);
+
+      if (openButton instanceof HTMLElement) {
+        openButton.dataset.index = String(safeIndex);
+        openButton.dataset.lightboxItems = itemsJson;
+        openButton.dataset.lightboxStartIndex = String(safeIndex);
+      }
+
+      if (moreButton instanceof HTMLElement) {
+        moreButton.dataset.lightboxItems = itemsJson;
+        moreButton.dataset.lightboxStartIndex = "0";
+      }
+
+      setActiveHint(groupName, safeIndex);
+    }
+
+    function cycleFeaturedImage(groupName, direction) {
+      const featured = root.querySelector(`[data-featured-image="${groupName}"]`);
+
+      if (!(featured instanceof HTMLImageElement)) return;
+
+      const currentIndex = Number(featured.dataset.index);
+      if (Number.isNaN(currentIndex)) return;
+
+      const nextIndex = direction === "prev" ? currentIndex - 1 : currentIndex + 1;
+      updateFeaturedImage(groupName, nextIndex);
+    }
+
+    hintButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      button.addEventListener("click", () => {
+        const groupName = button.dataset.group;
+        const index = Number(button.dataset.index);
+
+        if (!groupName || Number.isNaN(index)) return;
+        updateFeaturedImage(groupName, index);
+      });
+    });
+
+    galleryArrowButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const groupName = button.dataset.galleryArrow;
+        const direction = button.dataset.direction;
+
+        if (!groupName) return;
+        if (direction !== "prev" && direction !== "next") return;
+
+        cycleFeaturedImage(groupName, direction);
+      });
+    });
+
+    root.querySelectorAll(".gallery-section").forEach((section) => {
+      if (!(section instanceof HTMLElement)) return;
+
+      const groupName = section.dataset.gallerySection;
+      if (!groupName) return;
+
+      updateFeaturedImage(groupName, 0);
+    });
+  }
+</script>
+
+<style>
+  .gallery-overview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+
+  .gallery-section {
+    min-width: 0;
+  }
+
+  .gallery-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .gallery-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .gallery-count {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted, rgba(255, 250, 243, 0.72));
+    white-space: nowrap;
+  }
+
+  .gallery-main-wrap {
+    position: relative;
+    margin: 0 0 10px;
+    width: 100%;
+  }
+
+  .gallery-main-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .gallery-main-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 10px;
+    background: #f2f2f2;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 56px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(15, 15, 15, 0.22);
+    color: rgba(255, 250, 243, 0.92);
+    font-size: 1.25rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+    padding: 0;
+    box-shadow: none;
+    backdrop-filter: blur(3px);
+    -webkit-appearance: none;
+    appearance: none;
+    opacity: 0.72;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+
+  .gallery-arrow:hover {
+    background: rgba(15, 15, 15, 0.34);
+    opacity: 1;
+  }
+
+  .gallery-arrow-left {
+    left: 10px;
+  }
+
+  .gallery-arrow-right {
+    right: 10px;
+  }
+
+  .gallery-hints {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .gallery-hint,
+  .gallery-more {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    overflow: hidden;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .gallery-hint {
+    opacity: 0.34;
+    transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .gallery-hint:hover {
+    opacity: 0.62;
+  }
+
+  .gallery-hint.active {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    border-color: var(--title);
+  }
+
+  .gallery-hint-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--title);
+    background: rgba(255, 250, 243, 0.06);
+  }
+
+  @media (max-width: 900px) {
+    .gallery-overview {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .gallery-section {
+      max-width: 520px;
+    }
+
+    .gallery-main-image {
+      aspect-ratio: 16 / 10;
+    }
+
+    .gallery-hint,
+    .gallery-more {
+      width: 42px;
+      height: 42px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .gallery-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .gallery-arrow {
+      width: 36px;
+      height: 36px;
+      font-size: 1.35rem;
+    }
+
+    .gallery-arrow-left {
+      left: 10px;
+    }
+
+    .gallery-arrow-right {
+      right: 10px;
+    }
+  }
+</style>

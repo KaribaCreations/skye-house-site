@@ -1,0 +1,209 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const rooms = [
+  {
+    href: "/house/kitchen-living",
+    title: "Kitchen / Living Space",
+    image: "/images/house/kitchen-living/before/before4.jpg",
+  },
+  {
+    href: "/house/bedroom-1-ensuite",
+    title: "Bedroom 1 + Ensuite",
+    image: "/images/house/bedroom-1-ensuite/after/after3.jpg",
+  },
+  {
+    href: "/house/bedroom-2",
+    title: "Bedroom 2",
+    image: "/images/house/bedroom-2/during/during7.jpg",
+  },
+  {
+    href: "/house/bedroom-3",
+    title: "Bedroom 3",
+    image: "/images/house/bedroom-3/after/after5.jpg",
+  },
+  {
+    href: "/house/bathroom",
+    title: "Bathroom",
+    image: "/images/house/bathroom/after/after1.jpg",
+  },
+  {
+    href: "/house/hallway",
+    title: "Hallway",
+    image: "/images/house/hallway/during/during1.jpg",
+  },
+  {
+    href: "/house/loft",
+    title: "Loft",
+    image: "/images/house/loft/during/during6.jpg",
+  },
+];
+---
+
+<BaseLayout title="House — Skye House">
+  <section class="house-page">
+    <section class="hero-banner">
+      <img src="/images/homepage/house.jpg" alt="" class="hero-image" />
+      <div class="hero-overlay">
+        <p class="eyebrow">House</p>
+        <h1>Room-by-room renovation.</h1>
+      </div>
+    </section>
+
+    <section class="room-grid">
+      {rooms.map((room) => (
+        <a href={room.href} class="room-card">
+          <div class="room-card-image">
+            <img src={room.image} alt="" />
+          </div>
+
+          <div class="room-card-copy">
+            <h2>{room.title}</h2>
+          </div>
+        </a>
+      ))}
+    </section>
+  </section>
+
+  <style>
+    .house-page {
+      width: min(var(--site-width), calc(100% - var(--site-gutter)));
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      margin: 0 0 28px;
+      overflow: hidden;
+      border-radius: var(--radius-large);
+      background: var(--bg-panel);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.56) 0%,
+        rgba(0, 0, 0, 0.20) 42%,
+        rgba(0, 0, 0, 0.04) 72%
+      );
+      color: var(--title);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 250, 243, 0.86);
+    }
+
+    .hero-overlay h1 {
+      margin: 0;
+      max-width: 760px;
+    }
+
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+
+    .room-card {
+      display: grid;
+      gap: 0;
+      text-decoration: none;
+      color: inherit;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .room-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(176, 138, 99, 0.34);
+    }
+
+    .room-card-image {
+      background: var(--bg-panel);
+    }
+
+    .room-card-image img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .room-card-copy {
+      padding: 6px 7px 7px;
+    }
+
+    .room-card-copy h2 {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.15;
+    }
+
+    @media (max-width: 1100px) {
+      .room-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .room-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .house-page {
+        width: min(var(--site-width), calc(100% - var(--site-gutter-mobile)));
+        padding-bottom: 24px;
+      }
+
+      .hero-image {
+        height: 300px;
+      }
+
+      .hero-overlay {
+        padding: 18px;
+      }
+
+      .room-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .room-card-copy {
+        padding: 6px;
+      }
+
+      .room-card-copy h2 {
+        font-size: 0.76rem;
+      }
+    }
+  </style>
+</BaseLayout>

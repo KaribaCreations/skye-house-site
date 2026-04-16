@@ -1,0 +1,92 @@
+---
+const navItems = [
+  { href: "/house", label: "House" },
+  { href: "/garden", label: "Garden" },
+  { href: "/adventures", label: "Adventures" },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActivePath(href: string) {
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<header class="site-header">
+  <div class="inner">
+    <div class="site-header-bar">
+      <a href="/" class="site-title">Skye House</a>
+
+      <button
+        class="site-menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-mobile-nav"
+        aria-label="Open navigation"
+      >
+        Menu
+      </button>
+
+      <nav class="site-nav site-nav-desktop" aria-label="Primary">
+        <ul class="site-nav-list">
+          {navItems.map((item) => {
+            const isActive = isActivePath(item.href);
+
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    "site-nav-link",
+                    { "is-active": isActive },
+                  ]}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </div>
+
+    <nav id="site-mobile-nav" class="site-nav-mobile" aria-label="Mobile">
+      <ul class="site-nav-mobile-list">
+        {navItems.map((item) => {
+          const isActive = isActivePath(item.href);
+
+          return (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  "site-nav-mobile-link",
+                  { "is-active": isActive },
+                ]}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggleButton = document.querySelector<HTMLButtonElement>(".site-menu-toggle");
+  const mobileNav = document.getElementById("site-mobile-nav");
+
+  if (toggleButton instanceof HTMLButtonElement && mobileNav instanceof HTMLElement) {
+    toggleButton.addEventListener("click", () => {
+      const isOpen = toggleButton.getAttribute("aria-expanded") === "true";
+
+      toggleButton.setAttribute("aria-expanded", String(!isOpen));
+      toggleButton.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+      mobileNav.classList.toggle("open", !isOpen);
+    });
+  }
+</script>

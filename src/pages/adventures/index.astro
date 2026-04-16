@@ -1,0 +1,239 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const sections = [
+  {
+    href: "/adventures/coire-lagan",
+    title: "Coire Lagan",
+    image: "/images/adventures/Coire Lagan/cl0.jpg",
+  },
+  {
+    href: "/adventures/coral-beach",
+    title: "Coral Beach",
+    image: "/images/adventures/coral-beach/cb0.jpg",
+  },
+  {
+    href: "/adventures/eas-mor-waterfall",
+    title: "Eas Mor Waterfall",
+    image: "/images/adventures/Eas-Mor-Waterfall/em0.jpg",
+  },
+  {
+    href: "/adventures/elgol-day-out",
+    title: "Elgol Day Out",
+    image: "/images/adventures/elgol day out/e0.jpg",
+  },
+  {
+    href: "/adventures/fairy-glen",
+    title: "Fairy Glen",
+    image: "/images/adventures/fairy-glen/fg1.jpg",
+  },
+  {
+    href: "/adventures/fiscavaig-bay",
+    title: "Fiscavaig Bay",
+    image: "/images/adventures/fiscavaig bay/fb0.jpg",
+  },
+  {
+    href: "/adventures/fairy-pools",
+    title: "Fairy Pools",
+    image: "/images/adventures/fairy-pools/fp0.jpg",
+  },
+  {
+    href: "/adventures/old-man-of-storr",
+    title: "Old Man of Storr",
+    image: "/images/adventures/old-man-stoor/oms0.jpg",
+  },
+  {
+    href: "/adventures/quiraing",
+    title: "Quiraing",
+    image: "/images/adventures/quirang/q0.jpg",
+  },
+  {
+    href: "/adventures/random-extras",
+    title: "Random Extras",
+    image: "/images/adventures/random-extras/re0.jpg",
+  },
+  {
+    href: "/adventures/sgurr-na-stri",
+    title: "Sgùrr na Strì",
+    image: "/images/adventures/Sgùrr-na-Strì/s1.jpg",
+  },
+  {
+    href: "/adventures/storm-amy",
+    title: "Storm Amy",
+    image: "/images/adventures/Storm-Amy/sa1.png",
+  },
+  {
+    href: "/adventures/talisker-bay",
+    title: "Talisker Bay",
+    image: "/images/adventures/talisker-bay/tb0.jpg",
+  },
+];
+---
+
+<BaseLayout title="Adventures — Skye House">
+  <section class="garden-page">
+    <section class="hero-banner">
+      <img src="/images/adventures/Sgùrr-na-Strì/s0.jpg" alt="" class="hero-image" />
+      <div class="hero-overlay">
+        <p class="eyebrow">Adventures</p>
+        <h1>Adventures.</h1>
+      </div>
+    </section>
+
+    <section class="room-grid">
+      {sections.map((section) => (
+        <a href={section.href} class="room-card">
+          <div class="room-card-image">
+            <img src={section.image} alt="" />
+          </div>
+
+          <div class="room-card-copy">
+            <h2>{section.title}</h2>
+          </div>
+        </a>
+      ))}
+    </section>
+  </section>
+
+  <style>
+    .garden-page {
+      width: min(var(--site-width), calc(100% - var(--site-gutter)));
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      margin: 0 0 28px;
+      overflow: hidden;
+      border-radius: var(--radius-large);
+      background: var(--bg-panel);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.56) 0%,
+        rgba(0, 0, 0, 0.20) 42%,
+        rgba(0, 0, 0, 0.04) 72%
+      );
+      color: var(--title);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 250, 243, 0.86);
+    }
+
+    .hero-overlay h1 {
+      margin: 0;
+      max-width: 760px;
+    }
+
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+
+    .room-card {
+      display: grid;
+      gap: 0;
+      text-decoration: none;
+      color: inherit;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .room-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(176, 138, 99, 0.34);
+    }
+
+    .room-card-image {
+      background: var(--bg-panel);
+    }
+
+    .room-card-image img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .room-card-copy {
+      padding: 6px 7px 7px;
+    }
+
+    .room-card-copy h2 {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.15;
+    }
+
+    @media (max-width: 1100px) {
+      .room-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .room-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .garden-page {
+        width: min(var(--site-width), calc(100% - var(--site-gutter-mobile)));
+        padding-bottom: 24px;
+      }
+
+      .hero-image {
+        height: 300px;
+      }
+
+      .hero-overlay {
+        padding: 18px;
+      }
+
+      .room-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .room-card-copy {
+        padding: 6px;
+      }
+
+      .room-card-copy h2 {
+        font-size: 0.76rem;
+      }
+    }
+  </style>
+</BaseLayout>
