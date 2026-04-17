@@ -1,4 +1,14 @@
 ---
+interface Props {
+  backHref?: string;
+  backLabel?: string;
+}
+
+const {
+  backHref,
+  backLabel,
+} = Astro.props as Props;
+
 const navItems = [
   { href: "/house", label: "House" },
   { href: "/garden", label: "Garden" },
@@ -10,49 +20,37 @@ const currentPath = Astro.url.pathname;
 function isActivePath(href: string) {
   return currentPath === href || currentPath.startsWith(`${href}/`);
 }
+
+const hasBackLink = typeof backHref === "string" && typeof backLabel === "string";
 ---
 
 <header class="site-header">
-  <div class="inner">
-    <div class="site-header-bar">
-      <a href="/" class="site-title">Skye House</a>
-
-      <button
-        class="site-menu-toggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="site-mobile-nav"
-        aria-label="Open navigation"
-      >
-        Menu
-      </button>
-
-      <nav class="site-nav site-nav-desktop" aria-label="Primary">
-        <ul class="site-nav-list">
-          {navItems.map((item) => {
-            const isActive = isActivePath(item.href);
-
-            return (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={[
-                    "site-nav-link",
-                    { "is-active": isActive },
-                  ]}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {item.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+  <div class="site-header-bar">
+    <div class="site-header-left">
+      {
+        hasBackLink ? (
+          <a href={backHref} class="site-back-link" aria-label={`Back to ${backLabel}`}>
+            <span class="site-back-icon" aria-hidden="true">←</span>
+            <span class="site-back-text">{backLabel}</span>
+          </a>
+        ) : (
+          <a href="/" class="site-title">Skye House</a>
+        )
+      }
     </div>
 
-    <nav id="site-mobile-nav" class="site-nav-mobile" aria-label="Mobile">
-      <ul class="site-nav-mobile-list">
+    <button
+      class="site-menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-mobile-nav"
+      aria-label="Open navigation"
+    >
+      Menu
+    </button>
+
+    <nav class="site-nav site-nav-desktop" aria-label="Primary">
+      <ul class="site-nav-list">
         {navItems.map((item) => {
           const isActive = isActivePath(item.href);
 
@@ -61,7 +59,7 @@ function isActivePath(href: string) {
               <a
                 href={item.href}
                 class:list={[
-                  "site-nav-mobile-link",
+                  "site-nav-link",
                   { "is-active": isActive },
                 ]}
                 aria-current={isActive ? "page" : undefined}
@@ -74,10 +72,33 @@ function isActivePath(href: string) {
       </ul>
     </nav>
   </div>
+
+  <nav id="site-mobile-nav" class="site-nav-mobile" aria-label="Mobile">
+    <ul class="site-nav-mobile-list">
+      {navItems.map((item) => {
+        const isActive = isActivePath(item.href);
+
+        return (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                "site-nav-mobile-link",
+                { "is-active": isActive },
+              ]}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
 </header>
 
 <script>
-  const toggleButton = document.querySelector<HTMLButtonElement>(".site-menu-toggle");
+  const toggleButton = document.querySelector(".site-menu-toggle");
   const mobileNav = document.getElementById("site-mobile-nav");
 
   if (toggleButton instanceof HTMLButtonElement && mobileNav instanceof HTMLElement) {
@@ -90,3 +111,222 @@ function isActivePath(href: string) {
     });
   }
 </script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 16px 24px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(33, 29, 26, 0.92);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+  }
+
+  .site-header-left {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .site-title {
+    display: inline-block;
+    flex: 0 0 auto;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--title);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .site-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px 10px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--title);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .site-back-link:hover,
+  .site-back-link:focus-visible {
+    background: var(--accent-soft);
+    border-color: rgba(176, 138, 99, 0.28);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .site-back-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+
+  .site-back-text {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .site-nav {
+    min-width: 0;
+  }
+
+  .site-nav-list,
+  .site-nav-mobile-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-nav-desktop {
+    display: block;
+  }
+
+  .site-nav-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .site-nav-link,
+  .site-nav-mobile-link {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--text-soft);
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+  }
+
+  .site-nav-link {
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+  }
+
+  .site-nav-link:hover,
+  .site-nav-link:focus-visible {
+    color: var(--title);
+    background: var(--accent-soft);
+    border-color: rgba(176, 138, 99, 0.22);
+    outline: none;
+  }
+
+  .site-nav-link.is-active {
+    color: var(--title);
+    background: var(--accent-soft);
+    border-color: rgba(176, 138, 99, 0.32);
+  }
+
+  .site-menu-toggle {
+    display: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-panel);
+    color: var(--title);
+    padding: 10px 14px;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .site-menu-toggle:hover,
+  .site-menu-toggle:focus-visible {
+    border-color: rgba(176, 138, 99, 0.32);
+    background: var(--accent-soft);
+    outline: none;
+  }
+
+  .site-nav-mobile {
+    display: none;
+    margin: 0;
+    padding: 10px 24px 14px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(33, 29, 26, 0.96);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  }
+
+  .site-nav-mobile.open {
+    display: block;
+  }
+
+  .site-nav-mobile-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .site-nav-mobile-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: var(--radius-small);
+  }
+
+  .site-nav-mobile-link:hover,
+  .site-nav-mobile-link:focus-visible {
+    color: var(--title);
+    background: var(--accent-soft);
+    outline: none;
+  }
+
+  .site-nav-mobile-link.is-active {
+    color: var(--title);
+    background: var(--accent-soft);
+  }
+
+  @media (max-width: 640px) {
+    .site-header-bar {
+      padding: 14px 14px;
+    }
+
+    .site-nav-desktop {
+      display: none;
+    }
+
+    .site-menu-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .site-back-link {
+      padding: 9px 12px 9px 10px;
+      gap: 8px;
+    }
+
+    .site-back-text {
+      font-size: 0.92rem;
+    }
+
+    .site-nav-mobile {
+      padding: 10px 14px 14px;
+    }
+  }
+</style>
