@@ -24,4 +24,3 @@ pnpm-debug.log*
 .idea/
 public/months/
 content/months/
-*.mp4
