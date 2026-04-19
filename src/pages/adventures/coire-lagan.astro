@@ -181,8 +181,8 @@ const mediaItems: MediaItem[] = [
             />
 
             {item.type === "video" && (
-              <span class="video-badge" aria-hidden="true">
-                <span class="video-badge-icon"></span>
+              <span class="video-overlay-badge" aria-hidden="true">
+                
               </span>
             )}
           </button>
@@ -284,22 +284,6 @@ const mediaItems: MediaItem[] = [
       background: #f2f2f2;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-    }
-
-    .video-badge {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      pointer-events: none;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
     }
 
     .video-badge-icon {

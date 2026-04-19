@@ -1,10 +1,17 @@
 ---
 import LightboxViewer from "./LightboxViewer.astro";
 
+interface MediaItem {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+}
+
 interface GalleryItem {
   name: string;
   title: string;
-  images: string[];
+  images: Array<string | MediaItem>;
 }
 
 interface Props {
@@ -16,109 +23,131 @@ const {
   galleryId,
   galleries = [],
 } = Astro.props as Props;
+
+function normaliseItem(item: string | MediaItem, title: string, index: number): MediaItem {
+  if (typeof item === "string") {
+    return {
+      src: item,
+      alt: `${title} image ${index + 1}`,
+      type: "image",
+    };
+  }
+
+  return {
+    src: item.src,
+    alt: item.alt ?? `${title} image ${index + 1}`,
+    type: item.type ?? "image",
+    poster: item.poster,
+  };
+}
 ---
 
 <section class="gallery-overview" data-room-gallery-root={galleryId}>
   {
-    galleries.map((gallery: GalleryItem) => (
-      <section
-        class="gallery-section"
-        data-gallery-section={gallery.name}
-        data-current-index="0"
-        data-images={JSON.stringify(gallery.images)}
-        data-lightbox-items={JSON.stringify(
-          gallery.images.map((image: string, index: number) => ({
-            src: image,
-            alt: `${gallery.title} image ${index + 1}`,
-          })),
-        )}
-      >
-        <div class="gallery-header">
-          <h2>{gallery.title}</h2>
-          <p class="gallery-count">
-            {gallery.images.length} image{gallery.images.length === 1 ? "" : "s"}
-          </p>
-        </div>
+    galleries.map((gallery: GalleryItem) => {
+      const items = gallery.images.map((item, index) => normaliseItem(item, gallery.title, index));
+      const firstItem = items[0];
 
-        <div class="gallery-main-wrap">
-          <button
-            type="button"
-            class="gallery-main-button"
-            data-open-gallery={gallery.name}
-            data-index="0"
-            data-lightbox-open={`${galleryId}-viewer`}
-            data-lightbox-start-index="0"
-            aria-label={`Open ${gallery.title} gallery`}
-          >
-            <img
-              src={gallery.images[0]}
-              alt={`${gallery.title} image 1`}
-              class="gallery-main-image" loading="lazy" decoding="async"
-              data-featured-image={gallery.name}
-              data-group={gallery.name}
-              data-index="0"
-              loading="lazy"
-              decoding="async"
-            />
-          </button>
+      return (
+        <section
+          class="gallery-section"
+          data-gallery-section={gallery.name}
+          data-current-index="0"
+          data-lightbox-items={JSON.stringify(items)}
+        >
+          <div class="gallery-header">
+            <h2>{gallery.title}</h2>
+            <p class="gallery-count">
+              {items.length} item{items.length === 1 ? "" : "s"}
+            </p>
+          </div>
 
-          <button
-            type="button"
-            class="gallery-arrow gallery-arrow-left"
-            data-gallery-arrow={gallery.name}
-            data-direction="prev"
-            aria-label={`Previous ${gallery.title} image`}
-          >
-            ‹
-          </button>
-
-          <button
-            type="button"
-            class="gallery-arrow gallery-arrow-right"
-            data-gallery-arrow={gallery.name}
-            data-direction="next"
-            aria-label={`Next ${gallery.title} image`}
-          >
-            ›
-          </button>
-        </div>
-
-        <div class="gallery-hints">
-          {gallery.images.slice(0, 3).map((image: string, index: number) => (
+          <div class="gallery-main-wrap">
             <button
               type="button"
-              class={`gallery-hint ${index === 0 ? "active" : ""}`}
-              data-hint-button={gallery.name}
-              data-group={gallery.name}
-              data-index={index}
-              aria-label={`Show ${gallery.title} image ${index + 1}`}
-            >
-              <img
-                src={image}
-                alt=""
-                class="gallery-hint-image" loading="lazy" decoding="async"
-                loading="lazy"
-                decoding="async"
-              />
-            </button>
-          ))}
-
-          {gallery.images.length > 3 && (
-            <button
-              type="button"
-              class="gallery-more"
+              class="gallery-main-button"
               data-open-gallery={gallery.name}
               data-index="0"
               data-lightbox-open={`${galleryId}-viewer`}
               data-lightbox-start-index="0"
               aria-label={`Open ${gallery.title} gallery`}
             >
-              +{gallery.images.length - 3}
+              <img
+                src={firstItem?.type === "video" ? firstItem.poster ?? firstItem.src : firstItem?.src}
+                alt={firstItem?.alt ?? `${gallery.title} image 1`}
+                class="gallery-main-image"
+                data-featured-image={gallery.name}
+                data-group={gallery.name}
+                data-index="0"
+                loading="lazy"
+                decoding="async"
+              />
+
+              <span class="video-overlay-badge" aria-hidden="true" style={firstItem?.type === "video" ? "" : "display: none;"}></span>
             </button>
-          )}
-        </div>
-      </section>
-    ))
+
+            <button
+              type="button"
+              class="gallery-arrow gallery-arrow-left"
+              data-gallery-arrow={gallery.name}
+              data-direction="prev"
+              aria-label={`Previous ${gallery.title} item`}
+            >
+              ‹
+            </button>
+
+            <button
+              type="button"
+              class="gallery-arrow gallery-arrow-right"
+              data-gallery-arrow={gallery.name}
+              data-direction="next"
+              aria-label={`Next ${gallery.title} item`}
+            >
+              ›
+            </button>
+          </div>
+
+          <div class="gallery-hints">
+            {items.slice(0, 3).map((item: MediaItem, index: number) => (
+              <button
+                type="button"
+                class={`gallery-hint ${index === 0 ? "active" : ""}`}
+                data-hint-button={gallery.name}
+                data-group={gallery.name}
+                data-index={index}
+                aria-label={`Show ${gallery.title} item ${index + 1}`}
+              >
+                <img
+                  src={item.type === "video" ? item.poster ?? item.src : item.src}
+                  alt=""
+                  class="gallery-hint-image"
+                  loading="lazy"
+                  decoding="async"
+                />
+
+                {item.type === "video" && (
+                  <span class="gallery-hint-video-badge" aria-hidden="true">▶</span>
+                )}
+              </button>
+            ))}
+
+            {items.length > 3 && (
+              <button
+                type="button"
+                class="gallery-more"
+                data-open-gallery={gallery.name}
+                data-index="0"
+                data-lightbox-open={`${galleryId}-viewer`}
+                data-lightbox-start-index="0"
+                aria-label={`Open ${gallery.title} gallery`}
+              >
+                +{items.length - 3}
+              </button>
+            )}
+          </div>
+        </section>
+      );
+    })
   }
 
   <LightboxViewer viewerId={`${galleryId}-viewer`} items={[]} />
@@ -132,47 +161,32 @@ const {
     const galleryArrowButtons = root.querySelectorAll("[data-gallery-arrow]");
 
     const groups = new Map();
-    const groupItems = new Map();
 
     root.querySelectorAll(".gallery-section").forEach((section) => {
       if (!(section instanceof HTMLElement)) return;
 
       const groupName = section.dataset.gallerySection;
-      const rawImages = section.dataset.images;
+      const rawItems = section.dataset.lightboxItems;
 
-      if (!groupName || !rawImages) return;
+      if (!groupName || !rawItems) return;
 
       try {
-        const parsed = JSON.parse(rawImages);
+        const parsed = JSON.parse(rawItems);
         if (Array.isArray(parsed)) {
           groups.set(groupName, parsed);
-
-          const heading = section.querySelector(".gallery-header h2");
-          const headingText =
-            heading instanceof HTMLHeadingElement && heading.textContent
-              ? heading.textContent
-              : groupName;
-
-          groupItems.set(
-            groupName,
-            parsed.map((image, index) => ({
-              src: image,
-              alt: `${headingText} image ${index + 1}`,
-            })),
-          );
         }
       } catch {}
     });
 
     function normaliseIndex(groupName, index) {
-      const images = groups.get(groupName);
+      const items = groups.get(groupName);
 
-      if (!Array.isArray(images) || images.length === 0) {
+      if (!Array.isArray(items) || items.length === 0) {
         return 0;
       }
 
-      if (index < 0) return images.length - 1;
-      if (index >= images.length) return 0;
+      if (index < 0) return items.length - 1;
+      if (index >= items.length) return 0;
 
       return index;
     }
@@ -192,28 +206,35 @@ const {
     }
 
     function updateFeaturedImage(groupName, index) {
-      const images = groups.get(groupName);
-      const items = groupItems.get(groupName);
+      const items = groups.get(groupName);
       const featured = root.querySelector(`[data-featured-image="${groupName}"]`);
       const openButton = root.querySelector(`.gallery-main-button[data-open-gallery="${groupName}"]`);
+      const section = root.querySelector(`[data-gallery-section="${groupName}"]`);
+      const badge = section?.querySelector(".video-overlay-badge");
 
-      if (!Array.isArray(images)) return;
       if (!Array.isArray(items)) return;
       if (!(featured instanceof HTMLImageElement)) return;
 
       const safeIndex = normaliseIndex(groupName, index);
-      const nextImage = images[safeIndex];
       const nextItem = items[safeIndex];
 
-      if (!nextImage || !nextItem) return;
+      if (!nextItem || typeof nextItem.src !== "string") return;
 
-      featured.src = nextImage;
+      featured.src =
+        nextItem.type === "video"
+          ? (typeof nextItem.poster === "string" && nextItem.poster.length > 0 ? nextItem.poster : nextItem.src)
+          : nextItem.src;
+
       featured.alt = nextItem.alt ?? "";
       featured.dataset.index = String(safeIndex);
 
       if (openButton instanceof HTMLElement) {
         openButton.dataset.index = String(safeIndex);
         openButton.dataset.lightboxStartIndex = String(safeIndex);
+      }
+
+      if (badge instanceof HTMLElement) {
+        badge.style.display = nextItem.type === "video" ? "inline-flex" : "none";
       }
 
       setActiveHint(groupName, safeIndex);
@@ -311,6 +332,7 @@ const {
   }
 
   .gallery-main-button {
+    position: relative;
     display: block;
     width: 100%;
     padding: 0;
@@ -382,6 +404,7 @@ const {
 
   .gallery-hint,
   .gallery-more {
+    position: relative;
     width: 34px;
     height: 34px;
     padding: 0;
@@ -413,6 +436,23 @@ const {
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  .gallery-hint-video-badge {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    font-size: 0.45rem;
+    line-height: 1;
+    pointer-events: none;
   }
 
   .gallery-more {

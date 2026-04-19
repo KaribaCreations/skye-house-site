@@ -2,14 +2,27 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RoomGallery from "../../components/RoomGallery.astro";
 
-const beforeImages = [
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+type GalleryItem = {
+  name: string;
+  title: string;
+  images: Array<string | MediaItem>;
+};
+
+const beforeImages: Array<string | MediaItem> = [
   "/images/house/bedroom-1-ensuite/before/before1.jpg",
   "/images/house/bedroom-1-ensuite/before/before2.jpg",
   "/images/house/bedroom-1-ensuite/before/before3.jpg",
   "/images/house/bedroom-1-ensuite/before/before4.jpg",
 ];
 
-const duringImages = [
+const duringImages: Array<string | MediaItem> = [
   "/images/house/bedroom-1-ensuite/during/during1.jpg",
   "/images/house/bedroom-1-ensuite/during/during2.jpg",
   "/images/house/bedroom-1-ensuite/during/during3.jpg",
@@ -23,26 +36,44 @@ const duringImages = [
   "/images/house/bedroom-1-ensuite/during/during11.jpg",
   "/images/house/bedroom-1-ensuite/during/during12.jpg",
   "/images/house/bedroom-1-ensuite/during/during13.jpg",
+  {
+    src: "/images/house/bedroom-1-ensuite/during/vid1.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-1-ensuite/during/vid1.png",
+  },
   "/images/house/bedroom-1-ensuite/during/during14.jpg",
   "/images/house/bedroom-1-ensuite/during/during15.jpg",
+  {
+    src: "/images/house/bedroom-1-ensuite/during/vid2.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-1-ensuite/during/vid2.png",
+  },
   "/images/house/bedroom-1-ensuite/during/during16.jpg",
+  {
+    src: "/images/house/bedroom-1-ensuite/during/vid3.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-1-ensuite/during/vid3.png",
+  },
   "/images/house/bedroom-1-ensuite/during/during17.jpg",
   "/images/house/bedroom-1-ensuite/during/during18.jpg",
   "/images/house/bedroom-1-ensuite/during/during19.jpg",
+  {
+    src: "/images/house/bedroom-1-ensuite/during/vid4.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-1-ensuite/during/vid4.png",
+  },
   "/images/house/bedroom-1-ensuite/during/during20.jpg",
-
 ];
 
-const afterImages = [
+const afterImages: Array<string | MediaItem> = [
   "/images/house/bedroom-1-ensuite/after/after1.jpg",
   "/images/house/bedroom-1-ensuite/after/after2.jpg",
   "/images/house/bedroom-1-ensuite/after/after3.jpg",
   "/images/house/bedroom-1-ensuite/after/after4.jpg",
   "/images/house/bedroom-1-ensuite/after/after5.jpg",
-
 ];
 
-const galleries = [
+const galleries: GalleryItem[] = [
   {
     name: "before",
     title: "Before",

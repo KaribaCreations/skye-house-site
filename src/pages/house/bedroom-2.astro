@@ -2,13 +2,31 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RoomGallery from "../../components/RoomGallery.astro";
 
-const beforeImages = [
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+type GalleryItem = {
+  name: string;
+  title: string;
+  images: Array<string | MediaItem>;
+};
+
+const beforeImages: Array<string | MediaItem> = [
   "/images/house/bedroom-2/before/before1.jpg",
   "/images/house/bedroom-2/before/before2.jpg",
   "/images/house/bedroom-2/before/before3.jpg",
+  {
+    src: "/images/house/bedroom-2/before/vid1.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-2/before/vid1.png",
+  },
 ];
 
-const duringImages = [
+const duringImages: Array<string | MediaItem> = [
   "/images/house/bedroom-2/during/during0.jpg",
   "/images/house/bedroom-2/during/during1.jpg",
   "/images/house/bedroom-2/during/during2.jpg",
@@ -22,12 +40,12 @@ const duringImages = [
   "/images/house/bedroom-2/during/during11.jpg",
 ];
 
-const afterImages = [
+const afterImages: Array<string | MediaItem> = [
   "/images/house/bedroom-2/after/a1.jpg",
   "/images/house/bedroom-2/after/a2.jpg",
 ];
 
-const galleries = [
+const galleries: GalleryItem[] = [
   {
     name: "before",
     title: "Before",

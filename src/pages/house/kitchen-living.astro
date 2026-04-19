@@ -2,22 +2,69 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RoomGallery from "../../components/RoomGallery.astro";
 
-const beforeImages = [
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+type GalleryItem = {
+  name: string;
+  title: string;
+  images: Array<string | MediaItem>;
+};
+
+const beforeImages: Array<string | MediaItem> = [
   "/images/house/kitchen-living/before/before1.jpg",
   "/images/house/kitchen-living/before/before2.jpg",
   "/images/house/kitchen-living/before/before3.jpg",
   "/images/house/kitchen-living/before/before4.jpg",
+  {
+    src: "/images/house/kitchen-living/before/vid1.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/before/vid1.png",
+  },
+  {
+    src: "/images/house/kitchen-living/before/vid2.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/before/vid2.png",
+  },
 ];
 
-const duringImages = [
+const duringImages: Array<string | MediaItem> = [
+  {
+    src: "/images/house/kitchen-living/during/vid1.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/during/vid1.png",
+  },
+  {
+    src: "/images/house/kitchen-living/during/vid2.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/during/vid2.png",
+  },
+  {
+    src: "/images/house/kitchen-living/during/vid3.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/during/vid3.png",
+  },
+  {
+    src: "/images/house/kitchen-living/during/vid4.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/during/vid4.png",
+  },
+  {
+    src: "/images/house/kitchen-living/during/vid5.mp4",
+    type: "video",
+    poster: "/images/house/kitchen-living/during/vid5.png",
+  },
+];
+
+const afterImages: Array<string | MediaItem> = [
   "/comingsoon.png",
 ];
 
-const afterImages = [
-  "/comingsoon.png",
-];
-
-const galleries = [
+const galleries: GalleryItem[] = [
   {
     name: "before",
     title: "Before",

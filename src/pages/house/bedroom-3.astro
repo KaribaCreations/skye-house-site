@@ -2,12 +2,40 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RoomGallery from "../../components/RoomGallery.astro";
 
-const beforeImages = [
+type MediaItem = {
+  src: string;
+  alt?: string;
+  type?: "image" | "video";
+  poster?: string;
+};
+
+type GalleryItem = {
+  name: string;
+  title: string;
+  images: Array<string | MediaItem>;
+};
+
+const beforeImages: Array<string | MediaItem> = [
   "/images/house/bedroom-3/before/before1.jpg",
+  {
+    src: "/images/house/bedroom-3/before/vid1.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-3/before/vid1.png",
+  },
 ];
 
-const duringImages = [
+const duringImages: Array<string | MediaItem> = [
+  {
+    src: "/images/house/bedroom-3/during/vid1.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-3/during/vid1.png",
+  },
   "/images/house/bedroom-3/during/during1.jpg",
+  {
+    src: "/images/house/bedroom-3/during/vid2.mp4",
+    type: "video",
+    poster: "/images/house/bedroom-3/during/vid2.png",
+  },
   "/images/house/bedroom-3/during/during2.jpg",
   "/images/house/bedroom-3/during/during3.jpg",
   "/images/house/bedroom-3/during/during4.jpg",
@@ -19,7 +47,7 @@ const duringImages = [
   "/images/house/bedroom-3/during/during10.jpg",
 ];
 
-const afterImages = [
+const afterImages: Array<string | MediaItem> = [
   "/images/house/bedroom-3/after/after1.jpg",
   "/images/house/bedroom-3/after/after2.jpg",
   "/images/house/bedroom-3/after/after3.jpg",
@@ -28,7 +56,7 @@ const afterImages = [
   "/images/house/bedroom-3/after/after6.jpg",
 ];
 
-const galleries = [
+const galleries: GalleryItem[] = [
   {
     name: "before",
     title: "Before",
